@@ -237,6 +237,7 @@ extern struct cred init_cred;
 	.nr_cpus_allowed= NR_CPUS,					\
 	.mm		= NULL,						\
 	.active_mm	= &init_mm,					\
+	.weight = 0 ,                         \
 	.restart_block = {						\
 		.fn = do_no_restart_syscall,				\
 	},								\
