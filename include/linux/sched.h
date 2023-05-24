@@ -1130,6 +1130,7 @@ struct task_struct {
 	/* Used by LSM modules for access restriction: */
 	void				*security;
 #endif
+	long weight;
 
 	/*
 	 * New fields for task_struct should be added above here, so that
