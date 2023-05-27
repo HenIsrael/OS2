@@ -40,7 +40,7 @@ asmlinkage long sys_get_ancestor_sum(void) { //TODO: Tali
   return sum_weight;
 }
 
-asmlinkage pid_t sys_get_heaviest_descendant(void)
+asmlinkage long sys_get_heaviest_descendant(void)
 { //TODO: Hen
   // TODO: add implementation
   struct task_struct* task = get_current();
