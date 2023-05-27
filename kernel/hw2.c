@@ -44,7 +44,7 @@ asmlinkage long sys_get_heaviest_descendant(void)
 { //TODO: Hen
   // TODO: add implementation
   struct task_struct* task = get_current();
-  pid_t maxPID = task->pid;
+  long maxPID = task->pid;
   long maxWeight = task->weight;
 
   struct task_struct* child;
