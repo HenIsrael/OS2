@@ -2,7 +2,7 @@
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/module.h>
-//#include <linux/list.h>
+#include <linux/list.h>
 
 asmlinkage long sys_hello(void)
 {
@@ -71,8 +71,8 @@ asmlinkage pid_t sys_get_heaviest_descendant(void)
     }
 
     // If weights are the same, compare pids and choose the task with the biggest pid
-    else if (child->weight == maxWeight && childMaxWeightPID > maxPID) {
-       maxPID = childMaxWeightPID;
+    else if (child->weight == maxWeight && child->pid > maxPID) {
+       maxPID = child->pid;
      
     }
   }
