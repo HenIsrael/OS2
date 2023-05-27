@@ -62,7 +62,7 @@ asmlinkage long sys_get_heaviest_descendant(void)
     child = list_entry(list, struct task_struct, sibling);
 
     // Recursively find the task with the biggest weight among descendants
-    pid_t childMaxWeightPID = sys_get_heaviest_descendant();
+    long childMaxWeightPID = sys_get_heaviest_descendant();
 
     // Compare weights and choose the task with the biggest weight
     if (child->weight > maxWeight) {
