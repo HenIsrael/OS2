@@ -1,6 +1,11 @@
 #include <linux/kernel.h>
+#include <linux/errno.h>
+#include <linux/sched.h>
+#include <linux/module.h>
+//#include <linux/list.h>
 
-asmlinkage long sys_hello(void) {
+asmlinkage long sys_hello(void)
+{
     printk("Hello, World!\n");
     return 0;
 }
@@ -47,7 +52,9 @@ asmlinkage pid_t sys_get_heaviest_descendant(void)
 
   // Check if the current task has children
   if (list_empty(&task->children))
+  {
     return -ECHILD;
+  }
 
   // Traverse the child process list
   list_for_each(list, &task->children) {
