@@ -10,8 +10,8 @@ asmlinkage long sys_hello(void)
     return 0;
 }
 
-asmlinkage long sys_set_weight(int weight) { //TODO: Tali
-  // TODO: add implementation
+asmlinkage long sys_set_weight(int weight) { 
+  
   if( weight < 0 )
   {
     return -EINVAL; 
@@ -21,14 +21,14 @@ asmlinkage long sys_set_weight(int weight) { //TODO: Tali
   return 0; 
 }
 
-asmlinkage long sys_get_weight(void) { //TODO: Hen
-  // TODO: add implementation
+asmlinkage long sys_get_weight(void) { 
+
   struct task_struct *task = get_current();
   return task->weight;
 }
 
-asmlinkage long sys_get_ancestor_sum(void) { //TODO: Tali
-  // TODO: add implementation
+asmlinkage long sys_get_ancestor_sum(void) { 
+
   int sum_weight = 0;
   struct task_struct *task = current;
   while( task->pid != 0)
@@ -40,41 +40,40 @@ asmlinkage long sys_get_ancestor_sum(void) { //TODO: Tali
   return sum_weight;
 }
 
-asmlinkage long sys_get_heaviest_descendant(void)
-{ //TODO: Hen
-  // TODO: add implementation
-  struct task_struct* task = get_current();
-  long maxPID = task->pid;
-  long maxWeight = task->weight;
+long findTaskWithMaxWeight(struct task_struct* task, long* maxWeight) {
+    
+    struct list_head* list;
+    struct task_struct* child;
+    long maxPID = -1; // Initalize invalid pid for father
 
-  struct task_struct* child;
-  struct list_head* list;
+    // Traverse the child process list
+    list_for_each(list, &task->children) {
+        child = list_entry(list, struct task_struct, sibling);
 
-  // Check if the current task has children
-  if (list_empty(&task->children))
-  {
-    return -ECHILD;
-  }
+        // Compare weight and update maxWeight and maxPID if necessary
+        if (child->weight > *maxWeight || (child->weight == *maxWeight && child->pid < maxPID && maxPID != -1)) {
+            *maxWeight = child->weight;
+            maxPID = child->pid;
+        }
 
-  // Traverse the child process list
-  list_for_each(list, &task->children) {
-
-    child = list_entry(list, struct task_struct, sibling);
-
-    // Recursively find the task with the biggest weight among descendants
-    long childMaxWeightPID = sys_get_heaviest_descendant();
-
-    // Compare weights and choose the task with the biggest weight
-    if (child->weight > maxWeight) {
-      maxWeight = child->weight;
-      maxPID = child->pid;
+        // Recursively call the function for the current child
+        long childMaxPID = findTaskWithMaxWeight(child, maxWeight);
+        if (childMaxPID > maxPID) {
+            maxPID = childMaxPID;
+        }
     }
 
-    // If weights are the same, compare pids and choose the task with the biggest pid
-    else if (child->weight == maxWeight && child->pid > maxPID) {
-       maxPID = child->pid;
-     
+    return maxPID;
+}
+
+asmlinkage long sys_get_heaviest_descendant(void){
+    
+    struct task_struct* currentTask = current;
+    long maxWeight = 0; // father is not included in heaviest descendant  
+
+    if (list_empty(&currentTask->children)) {
+        return -ECHILD;  // Return -ECHILD if the current task has no descendants
     }
-  }
-  return maxPID;
+
+    return findTaskWithMaxWeight(currentTask, &maxWeight);
 }
